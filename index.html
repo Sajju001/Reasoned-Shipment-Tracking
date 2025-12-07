@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reasonec | NCI Shipments Record</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <img src="logo.png" alt="">
+                <h1>Reasoned <span class="subtitle">NCI Shipments Record</span></h1>
+            </div>
+            <div class="stats">
+                <div class="stat-card">
+                    <span class="stat-label">Current Bag</span>
+                    <span id="current-count" class="stat-value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Bags</span>
+                    <span id="total-bags" class="stat-value">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <!-- SCANNER PANEL -->
+            <section class="panel scanner-panel">
+                <h2><i class="fas fa-barcode"></i> Scanner Panel</h2>
+                <div class="scanner-controls">
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="scanner-input" 
+                            placeholder="Scan or type shipment number, then press ENTER" 
+                            autofocus>
+                        <button id="manual-add" class="btn-secondary">
+                            <i class="fas fa-plus"></i> Add Manually
+                        </button>
+                    </div>
+                    <div class="scan-actions">
+                        <button id="save-bag" class="btn-primary">
+                            <i class="fas fa-save"></i> Save Bag
+                        </button>
+                        <button id="clear-current" class="btn-danger">
+                            <i class="fas fa-trash"></i> Clear Current
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="lists-container">
+                    <div class="list-box">
+                        <h3><i class="fas fa-shopping-bag"></i> Current Bag <span id="bag-counter">(0 shipments)</span></h3>
+                        <div class="list-content">
+                            <ul id="current-bag-list">
+                                <!-- Current bag items appear here -->
+                                <li class="empty-message">No shipments in current bag</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="list-box">
+                        <h3><i class="fas fa-history"></i> Recent Scans <span>(Last 10)</span></h3>
+                        <div class="list-content">
+                            <ul id="recent-scans-list">
+                                <!-- Recent scans appear here -->
+                                <li class="empty-message">No recent scans</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEARCH & BAGS PANEL -->
+            <section class="panel search-panel">
+                <h2><i class="fas fa-search"></i> Search System</h2>
+                <div class="search-controls">
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            placeholder="Search shipment number or Bag ID (BAG#001)">
+                        <button id="search-btn" class="btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="search-results" class="search-results">
+                    <!-- Search results appear here -->
+                    <div class="empty-search">
+                        <i class="fas fa-search"></i>
+                        <p>Search for a shipment or bag to see details here</p>
+                    </div>
+                </div>
+                
+                <div class="saved-bags-section">
+                    <h3><i class="fas fa-archive"></i> Saved Bags</h3>
+                    <div class="list-content">
+                        <ul id="saved-bags-list">
+                            <!-- Saved bags appear here -->
+                            <li class="empty-message">No saved bags yet</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BAG DETAIL PANEL -->
+            <section class="panel detail-panel">
+                <h2><i class="fas fa-info-circle"></i> Bag Details</h2>
+                <div id="bag-detail-content">
+                    <div class="empty-detail">
+                        <i class="fas fa-box-open"></i>
+                        <p>Select a bag from the Saved Bags list to view its contents</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Reasonec Shipment System &copy; <span id="current-year"></span> | NCI Logistics</p>
+            <button id="clear-storage" class="btn-text">
+                <i class="fas fa-trash-alt"></i> Clear All Data
+            </button>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
