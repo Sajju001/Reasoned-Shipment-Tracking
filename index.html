@@ -3,134 +3,762 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reasonec | NCI Shipments Record</title>
+    <title>Reasoned - NCI Shipments Record System</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <img src="logo.png" alt="">
-                <h1>Reasoned <span class="subtitle">NCI Shipments Record</span></h1>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="logo-header">
+                <div class="logo-placeholder">
+                    <img src="logo.png" alt="">
+        
+                </div>
+                <h1>NCI Shipments Record System</h1>
+                <p>Track and manage all shipment consignments</p>
             </div>
-            <div class="stats">
-                <div class="stat-card">
-                    <span class="stat-label">Current Bag</span>
-                    <span id="current-count" class="stat-value">0</span>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-label">Total Bags</span>
-                    <span id="total-bags" class="stat-value">0</span>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
                 </div>
+                
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="dashboard-container" style="display: none;">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="logo">
+                    <img src="logo.png" alt="">
+                    <div>
+                        <h2>REASONED</h2>
+                        <p>NCI Shipments Record System</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search CN or BAG#...">
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <span id="currentUsername">User</span>
+                        <span id="currentDesignation">Designation</span>
+                        <span id="currentRole" class="role-badge">Role</span>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
             </div>
         </header>
 
-        <main class="dashboard">
-            <!-- SCANNER PANEL -->
-            <section class="panel scanner-panel">
-                <h2><i class="fas fa-barcode"></i> Scanner Panel</h2>
-                <div class="scanner-controls">
-                    <div class="input-group">
-                        <input 
-                            type="text" 
-                            id="scanner-input" 
-                            placeholder="Scan or type shipment number, then press ENTER" 
-                            autofocus>
-                        <button id="manual-add" class="btn-secondary">
-                            <i class="fas fa-plus"></i> Add Manually
-                        </button>
-                    </div>
-                    <div class="scan-actions">
-                        <button id="save-bag" class="btn-primary">
-                            <i class="fas fa-save"></i> Save Bag
-                        </button>
-                        <button id="clear-current" class="btn-danger">
-                            <i class="fas fa-trash"></i> Clear Current
-                        </button>
-                    </div>
-                </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <ul>
+                        <li class="active" data-section="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </li>
+                        <li data-section="scan" id="scanSection">
+                            <i class="fas fa-barcode"></i>
+                            <span>Scan CN</span>
+                        </li>
+                        <li data-section="bags">
+                            <i class="fas fa-suitcase"></i>
+                            <span>Bags Management</span>
+                        </li>
+                        <li data-section="users" id="usersSection">
+                            <i class="fas fa-users"></i>
+                            <span>User Management</span>
+                        </li>
+                        <li data-section="reports">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Reports</span>
+                        </li>
+                        <li data-section="settings" id="settingsSection">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </li>
+                    </ul>
+                </nav>
                 
-                <div class="lists-container">
-                    <div class="list-box">
-                        <h3><i class="fas fa-shopping-bag"></i> Current Bag <span id="bag-counter">(0 shipments)</span></h3>
-                        <div class="list-content">
-                            <ul id="current-bag-list">
-                                <!-- Current bag items appear here -->
-                                <li class="empty-message">No shipments in current bag</li>
-                            </ul>
+                <div class="recent-activity">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    <ul id="activityList">
+                        <!-- Activity items will be added here dynamically -->
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <section id="dashboardSection" class="content-section active">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+                        <div class="stats-summary">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: #e3f2fd;">
+                                    <i class="fas fa-suitcase" style="color: #2196f3;"></i>
+                                </div>
+                                <div class="stat-details">
+                                    <h3 id="totalBags">0</h3>
+                                    <p>Total Bags</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: #e8f5e9;">
+                                    <i class="fas fa-barcode" style="color: #4caf50;"></i>
+                                </div>
+                                <div class="stat-details">
+                                    <h3 id="totalCNs">0</h3>
+                                    <p>Total CNs</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: #fff3e0;">
+                                    <i class="fas fa-users" style="color: #ff9800;"></i>
+                                </div>
+                                <div class="stat-details">
+                                    <h3 id="totalUsers">0</h3>
+                                    <p>Total Users</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background-color: #f3e5f5;">
+                                    <i class="fas fa-clipboard-list" style="color: #9c27b0;"></i>
+                                </div>
+                                <div class="stat-details">
+                                    <h3 id="todayActivity">0</h3>
+                                    <p>Today's Activity</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="list-box">
-                        <h3><i class="fas fa-history"></i> Recent Scans <span>(Last 10)</span></h3>
-                        <div class="list-content">
-                            <ul id="recent-scans-list">
-                                <!-- Recent scans appear here -->
-                                <li class="empty-message">No recent scans</li>
-                            </ul>
+                    <div class="dashboard-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-shipping-fast"></i> Recent Bags</h3>
+                                <button id="refreshBtn" class="btn-icon">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table id="recentBagsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>BAG#</th>
+                                                <th>CN Count</th>
+                                                <th>Last Updated</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Recent bags will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-chart-line"></i> System Status</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="status-info">
+                                    <div class="status-item">
+                                        <span class="status-label">System Version</span>
+                                        <span class="status-value">1.2.0</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">Last Backup</span>
+                                        <span class="status-value" id="lastBackup">Today, 08:00 AM</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">Data Integrity</span>
+                                        <span class="status-value"><span class="status-indicator active"></span> 100%</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">Your Permissions</span>
+                                        <span class="status-value" id="permissionSummary">View Only</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- SEARCH & BAGS PANEL -->
-            <section class="panel search-panel">
-                <h2><i class="fas fa-search"></i> Search System</h2>
-                <div class="search-controls">
-                    <div class="input-group">
-                        <input 
-                            type="text" 
-                            id="search-input" 
-                            placeholder="Search shipment number or Bag ID (BAG#001)">
-                        <button id="search-btn" class="btn-primary">
-                            <i class="fas fa-search"></i> Search
+                <!-- Scan CN Section -->
+                <section id="scanSectionContent" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-barcode"></i> Scan Consignment Numbers</h2>
+                        <div class="current-bag-info">
+                            <span>Current Bag: </span>
+                            <strong id="currentBagNumber">BAG#001</strong>
+                            <button id="saveBagBtn" class="btn-primary">
+                                <i class="fas fa-save"></i> Save Bag
+                            </button>
+                            <button id="newBagBtn" class="btn-secondary">
+                                <i class="fas fa-plus-circle"></i> New Bag
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="scan-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-keyboard"></i> CN Scanner</h3>
+                                <div class="cn-counter">
+                                    <span>CNs in current bag: </span>
+                                    <strong id="currentBagCount">0</strong>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="scan-input-container">
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-barcode"></i>
+                                        <input type="text" id="cnInput" placeholder="Enter CN (5-2-9 or 14 digits) and press Enter" autofocus>
+                                    </div>
+                                    <div class="input-hint">
+                                        <p><i class="fas fa-info-circle"></i> Accepts formats: 00000-00-000000000 or 00000000000000</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="cn-list-container">
+                                    <h4><i class="fas fa-list"></i> Scanned CNs in Current Bag</h4>
+                                    <div class="table-container">
+                                        <table id="currentCNTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Consignment Number</th>
+                                                    <th>Timestamp</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- CNs will be added here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-lightbulb"></i> Scanning Instructions</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="instructions">
+                                    <div class="instruction-item">
+                                        <div class="instruction-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="instruction-text">
+                                            <h4>Valid CN Formats</h4>
+                                            <p>• 5-2-9 format: 12345-67-890123456</p>
+                                            <p>• 14 digits: 12345678901234</p>
+                                        </div>
+                                    </div>
+                                    <div class="instruction-item">
+                                        <div class="instruction-icon">
+                                            <i class="fas fa-times-circle"></i>
+                                        </div>
+                                        <div class="instruction-text">
+                                            <h4>Invalid CNs will be rejected</h4>
+                                            <p>• Non-numeric characters</p>
+                                            <p>• Wrong format or length</p>
+                                            <p>• Duplicate CNs in the same bag</p>
+                                        </div>
+                                    </div>
+                                    <div class="instruction-item">
+                                        <div class="instruction-icon">
+                                            <i class="fas fa-keyboard"></i>
+                                        </div>
+                                        <div class="instruction-text">
+                                            <h4>Quick Actions</h4>
+                                            <p>• Press <kbd>Enter</kbd> to add CN</p>
+                                            <p>• Press <kbd>Esc</kbd> to clear input</p>
+                                            <p>• Click <i class="fas fa-trash"></i> to remove CN</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bags Management Section -->
+                <section id="bagsSection" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-suitcase"></i> Bags Management</h2>
+                        <div class="actions">
+                            <button id="deleteAllBagsBtn" class="btn-danger" style="display: none;">
+                                <i class="fas fa-trash-alt"></i> Delete All Bags
+                            </button>
+                            <button id="exportBagsBtn" class="btn-primary">
+                                <i class="fas fa-file-export"></i> Export to Excel
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bags-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-archive"></i> All Saved Bags</h3>
+                                <div class="search-container small">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="filterBags" placeholder="Filter bags...">
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table id="allBagsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>BAG#</th>
+                                                <th>CN Count</th>
+                                                <th>Created Date</th>
+                                                <th>Last Updated</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Bags will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" id="bagDetailsCard" style="display: none;">
+                            <div class="card-header">
+                                <h3><i class="fas fa-info-circle"></i> Bag Details - <span id="detailBagNumber">BAG#001</span></h3>
+                                <button id="closeDetailsBtn" class="btn-icon">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="bag-detail-info">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Total CNs:</span>
+                                        <span class="detail-value" id="detailTotalCNs">0</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Created:</span>
+                                        <span class="detail-value" id="detailCreated">-</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Last Updated:</span>
+                                        <span class="detail-value" id="detailUpdated">-</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="table-container">
+                                    <table id="bagDetailTable">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Consignment Number</th>
+                                                <th>Timestamp</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Bag details will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="bag-actions">
+                                    <button id="exportBagBtn" class="btn-primary">
+                                        <i class="fas fa-file-excel"></i> Export This Bag
+                                    </button>
+                                    <button id="deleteBagBtn" class="btn-danger" style="display: none;">
+                                        <i class="fas fa-trash-alt"></i> Delete This Bag
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Management Section -->
+                <section id="usersSectionContent" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-users"></i> User Management</h2>
+                        <button id="addUserBtn" class="btn-primary" style="display: none;">
+                            <i class="fas fa-user-plus"></i> Add New User
                         </button>
                     </div>
-                </div>
-                
-                <div id="search-results" class="search-results">
-                    <!-- Search results appear here -->
-                    <div class="empty-search">
-                        <i class="fas fa-search"></i>
-                        <p>Search for a shipment or bag to see details here</p>
+                    
+                    <div class="users-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-user-friends"></i> System Users</h3>
+                                <div class="search-container small">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="filterUsers" placeholder="Search users...">
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table id="usersTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Name</th>
+                                                <th>Designation</th>
+                                                <th>Role</th>
+                                                <th>Last Login</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Users will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Add/Edit User Modal (hidden by default) -->
+                        <div id="userModal" class="modal" style="display: none;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3><i class="fas fa-user-edit"></i> <span id="modalTitle">Add New User</span></h3>
+                                    <button id="closeModalBtn" class="btn-icon">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="userForm">
+                                        <div class="form-group">
+                                            <label for="modalUsername">Username</label>
+                                            <input type="text" id="modalUsername" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modalName">Full Name</label>
+                                            <input type="text" id="modalName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modalDesignation">Designation</label>
+                                            <select id="modalDesignation" required>
+                                                <option value="">Select Designation</option>
+                                                <option value="Branch Assistant">Branch Assistant</option>
+                                                <option value="Debriefing Assistant">Debriefing Assistant</option>
+                                                <option value="Branch Manager">Branch Manager</option>
+                                                <option value="Operations Officer">Operations Officer</option>
+                                                <option value="Logistics Coordinator">Logistics Coordinator</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modalRole">Role</label>
+                                            <select id="modalRole" required>
+                                                <option value="user">User (View Only)</option>
+                                                <option value="admin">Admin (Full Access)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modalPassword">Password</label>
+                                            <input type="password" id="modalPassword" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modalConfirmPassword">Confirm Password</label>
+                                            <input type="password" id="modalConfirmPassword" required>
+                                        </div>
+                                        <div class="form-actions">
+                                            <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
+                                            <button type="submit" id="saveUserBtn" class="btn-primary">Save User</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="saved-bags-section">
-                    <h3><i class="fas fa-archive"></i> Saved Bags</h3>
-                    <div class="list-content">
-                        <ul id="saved-bags-list">
-                            <!-- Saved bags appear here -->
-                            <li class="empty-message">No saved bags yet</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- BAG DETAIL PANEL -->
-            <section class="panel detail-panel">
-                <h2><i class="fas fa-info-circle"></i> Bag Details</h2>
-                <div id="bag-detail-content">
-                    <div class="empty-detail">
-                        <i class="fas fa-box-open"></i>
-                        <p>Select a bag from the Saved Bags list to view its contents</p>
+                <!-- Reports Section -->
+                <section id="reportsSection" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+                        <button id="generateReportBtn" class="btn-primary">
+                            <i class="fas fa-file-download"></i> Generate Full Report
+                        </button>
                     </div>
-                </div>
-            </section>
-        </main>
+                    
+                    <div class="reports-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-chart-pie"></i> Shipment Statistics</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="charts-container">
+                                    <div class="chart-placeholder">
+                                        <div class="chart-info">
+                                            <h4>Bags Overview</h4>
+                                            <div class="chart-stats">
+                                                <div class="chart-stat">
+                                                    <span class="stat-value" id="totalBagsChart">0</span>
+                                                    <span class="stat-label">Total Bags</span>
+                                                </div>
+                                                <div class="chart-stat">
+                                                    <span class="stat-value" id="avgCNsPerBag">0</span>
+                                                    <span class="stat-label">Avg CNs per Bag</span>
+                                                </div>
+                                                <div class="chart-stat">
+                                                    <span class="stat-value" id="latestBag">-</span>
+                                                    <span class="stat-label">Latest Bag</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chart-visual">
+                                            <canvas id="bagsChart" width="200" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="report-filters">
+                                    <h4><i class="fas fa-filter"></i> Filter Reports</h4>
+                                    <div class="filter-options">
+                                        <div class="filter-group">
+                                            <label for="reportType">Report Type:</label>
+                                            <select id="reportType">
+                                                <option value="daily">Daily Summary</option>
+                                                <option value="weekly">Weekly Summary</option>
+                                                <option value="monthly">Monthly Summary</option>
+                                                <option value="bags">Bags Report</option>
+                                                <option value="cns">CNs Report</option>
+                                            </select>
+                                        </div>
+                                        <div class="filter-group">
+                                            <label for="dateFrom">From:</label>
+                                            <input type="date" id="dateFrom">
+                                        </div>
+                                        <div class="filter-group">
+                                            <label for="dateTo">To:</label>
+                                            <input type="date" id="dateTo">
+                                        </div>
+                                        <button id="applyFiltersBtn" class="btn-secondary">
+                                            <i class="fas fa-search"></i> Apply Filters
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-file-excel"></i> Export Options</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="export-options">
+                                    <div class="export-option">
+                                        <div class="export-icon">
+                                            <i class="fas fa-suitcase"></i>
+                                        </div>
+                                        <div class="export-details">
+                                            <h4>Export All Bags</h4>
+                                            <p>Complete data of all bags with CN details</p>
+                                            <button class="btn-primary export-btn" data-type="all-bags">
+                                                <i class="fas fa-download"></i> Export Excel
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="export-option">
+                                        <div class="export-icon">
+                                            <i class="fas fa-list-alt"></i>
+                                        </div>
+                                        <div class="export-details">
+                                            <h4>Export CN List</h4>
+                                            <p>All consignment numbers with timestamps</p>
+                                            <button class="btn-primary export-btn" data-type="all-cns">
+                                                <i class="fas fa-download"></i> Export Excel
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="export-option">
+                                        <div class="export-icon">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div class="export-details">
+                                            <h4>Export User Activity</h4>
+                                            <p>User login history and system activities</p>
+                                            <button class="btn-primary export-btn" data-type="user-activity">
+                                                <i class="fas fa-download"></i> Export Excel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-        <footer class="footer">
-            <p>Reasonec Shipment System &copy; <span id="current-year"></span> | NCI Logistics</p>
-            <button id="clear-storage" class="btn-text">
-                <i class="fas fa-trash-alt"></i> Clear All Data
-            </button>
-        </footer>
+                <!-- Settings Section -->
+                <section id="settingsSectionContent" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-cog"></i> System Settings</h2>
+                    </div>
+                    
+                    <div class="settings-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-user-shield"></i> Account Settings</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="changePasswordForm">
+                                    <div class="form-group">
+                                        <label for="currentPassword">Current Password</label>
+                                        <input type="password" id="currentPassword" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newPassword">New Password</label>
+                                        <input type="password" id="newPassword" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="confirmNewPassword">Confirm New Password</label>
+                                        <input type="password" id="confirmNewPassword" required>
+                                    </div>
+                                    <button type="submit" class="btn-primary" id="changePasswordBtn">
+                                        <i class="fas fa-key"></i> Change Password
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-palette"></i> Display Settings</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-option">
+                                    <span class="setting-label">Theme</span>
+                                    <div class="theme-selector">
+                                        <button class="theme-option active" data-theme="light">
+                                            <i class="fas fa-sun"></i> Light
+                                        </button>
+                                        <button class="theme-option" data-theme="dark">
+                                            <i class="fas fa-moon"></i> Dark
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="setting-option">
+                                    <span class="setting-label">Items per page</span>
+                                    <select id="itemsPerPage">
+                                        <option value="10">10</option>
+                                        <option value="25" selected>25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="setting-option">
+                                    <span class="setting-label">Auto-save interval</span>
+                                    <select id="autoSaveInterval">
+                                        <option value="0">Disabled</option>
+                                        <option value="30000">30 seconds</option>
+                                        <option value="60000" selected>1 minute</option>
+                                        <option value="300000">5 minutes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" id="systemSettingsCard" style="display: none;">
+                            <div class="card-header">
+                                <h3><i class="fas fa-server"></i> System Configuration</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-option">
+                                    <span class="setting-label">Enable CN validation</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="cnValidationToggle" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-option">
+                                    <span class="setting-label">Auto-backup</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="autoBackupToggle" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-option">
+                                    <span class="setting-label">Activity logging</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="activityLoggingToggle" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <button id="saveSystemSettingsBtn" class="btn-primary">
+                                    <i class="fas fa-save"></i> Save System Settings
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
     </div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="toast"></div>
+    <!-- Search Results Modal -->
+    <div id="searchModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-search"></i> Search Results</h3>
+                <button id="closeSearchModalBtn" class="btn-icon">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResultsContent">
+                    <!-- Search results will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Toast Notifications -->
+    <div id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
